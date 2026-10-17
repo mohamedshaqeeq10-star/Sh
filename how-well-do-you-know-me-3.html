@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101018">
+<title>How Well Do You Know Me?</title>
+<style>
+:root{--bg:#0b0b12;--panel:#171722;--panel2:#202032;--text:#f7f7fb;--muted:#aaaabe;--accent:#a3ff6f;--accent2:#8c7bff;--wrong:#ff6f91}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#202044 0%,var(--bg) 55%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+.wrap{width:min(720px,100%);margin:auto;padding:22px 16px 40px}.top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.88rem;margin-bottom:22px}.brand{font-weight:800;letter-spacing:.08em;color:var(--accent)}.card{background:rgba(23,23,34,.96);border:1px solid #343448;border-radius:24px;padding:clamp(20px,5vw,34px);box-shadow:0 18px 55px #0005}.eyebrow{color:var(--accent);font-size:.78rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.hero h1{font-size:clamp(2.2rem,8vw,4rem);line-height:1.02;margin:12px 0}.hero p,.muted{color:var(--muted);line-height:1.6}.chips{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.chip{background:#28283a;border:1px solid #41415a;border-radius:99px;padding:7px 11px;font-size:.85rem}.btn{width:100%;border:0;border-radius:14px;padding:15px 18px;font-weight:800;font-size:1rem;background:var(--accent);color:#101018;cursor:pointer;margin-top:14px}.btn.secondary{background:#2a2a40;color:var(--text);border:1px solid #46465f}.btn:focus-visible,.option:focus-visible,input:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}.field{width:100%;padding:14px 15px;background:#10101a;color:var(--text);border:1px solid #41415a;border-radius:13px;font:inherit;margin-top:8px}.progressrow{display:flex;justify-content:space-between;color:var(--muted);font-size:.9rem;margin-bottom:12px}.bar{height:7px;background:#303044;border-radius:99px;overflow:hidden;margin-bottom:26px}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .2s}.question{font-size:clamp(1.45rem,5vw,2rem);line-height:1.2;margin:0 0 20px}.options{display:grid;gap:10px}.option{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:14px;border-radius:14px;border:1px solid #3d3d55;background:#202032;color:var(--text);font:inherit;cursor:pointer}.option .letter{display:grid;place-items:center;min-width:34px;height:34px;border-radius:10px;background:#32324a;font-weight:800}.option.selected{border-color:var(--accent);background:#252f25}.option.selected .letter{background:var(--accent);color:#101018}.option.correct{border-color:var(--accent)}.option.incorrect{border-color:var(--wrong)}.hidden{display:none!important}.score{font-size:clamp(3rem,14vw,5.5rem);font-weight:900;letter-spacing:-.06em;color:var(--accent);line-height:1}.result-item{padding:14px;border-radius:14px;background:#202032;margin:10px 0;border:1px solid #39394f}.result-item strong{display:block;margin-bottom:6px}.good{color:var(--accent)}.bad{color:var(--wrong)}.small{font-size:.84rem;color:var(--muted)}footer{text-align:center;color:#77778e;font-size:.78rem;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="brand">PERSONAL QUIZ</span><span>15 questions · 1 challenge</span></div>
+  <main class="card hero" id="intro">
+    <div class="eyebrow">The friendship test</div>
+    <h1>How well do<br>you know me? 👀</h1>
+    <p>Think you know my favourites, my vibe and my dreams? Take the challenge and see how many you can get right.</p>
+    <div class="chips"><span class="chip">⚡ 15 questions</span><span class="chip">🏆 Score out of 15</span><span class="chip">📱 Phone friendly</span></div>
+    <label for="friendName">Your name</label>
+    <input class="field" id="friendName" maxlength="32" placeholder="Enter your name (optional)" autocomplete="nickname">
+    <button class="btn" id="startBtn">Start the challenge →</button>
+    <p class="small">Tip: answer without asking me for hints 😏</p>
+  </main>
+
+  <main class="card hidden" id="quiz">
+    <div class="progressrow"><span id="qCount">QUESTION 1 OF 15</span><span id="scoreNow">0 correct</span></div>
+    <div class="bar"><div class="fill" id="progress"></div></div>
+    <h2 class="question" id="questionText"></h2>
+    <div class="options" id="options"></div>
+    <button class="btn" id="nextBtn" disabled>Lock answer & continue →</button>
+  </main>
+
+  <main class="card hidden" id="results">
+    <div class="eyebrow">Challenge complete</div>
+    <h1 id="resultTitle">Nice try!</h1>
+    <div class="score"><span id="finalScore">0</span><span style="font-size:1.5rem;color:var(--muted)"> / 15</span></div>
+    <p id="percent" class="muted"></p>
+    <p id="resultMessage"></p>
+    <button class="btn" id="shareBtn">Share my result ↗</button>
+    <button class="btn secondary" id="reviewBtn">Review the answers</button>
+    <button class="btn secondary" id="retryBtn">Play again</button>
+    <div id="review" class="hidden" style="margin-top:22px">
+      <h2>Answer review</h2>
+      <div id="reviewList"></div>
+    </div>
+    <p class="small">This quiz runs in your browser. Your answers aren't sent to a server.</p>
+  </main>
+  <footer>Made for friends, memories & a little competition ✨</footer>
+</div>
+<script>
+const questions = [
+ {q:"What's my favourite colour?",opts:["Blue","Green","Black","Red"],a:1},
+ {q:"What's my favourite phone brand?",opts:["Apple","OnePlus","Samsung","Poco"],a:2},
+ {q:"What's my dream car?",opts:["BMW","Toyota Supra","Mercedes-Benz","Audi"],a:0},
+ {q:"Which anime is my favourite?",opts:["Jujutsu Kaisen","Naruto","Solo Leveling","One Piece"],a:2},
+ {q:"What's my favourite clothing style?",opts:["Formal","Streetwear","Old money","Traditional"],a:1},
+ {q:"What's my favourite sneaker style?",opts:["All-white","All-black","Bright colourful","Black and white"],a:3},
+ {q:"What music vibe do I like most?",opts:["Melody","Tamil kuthu","Hip-hop","Lo-fi"],a:1},
+ {q:"Which bike style do I like?",opts:["Cruiser","Sport bike","Adventure tourer","Scooter"],a:1},
+ {q:"What type of game do I prefer?",opts:["Racing","Puzzle","Battle royale","Football"],a:2},
+ {q:"What's my favourite food?",opts:["Pizza","Biriyani","Burger","Fried rice"],a:1},
+ {q:"What's my dream travel destination?",opts:["Maldives","Japan","Dubai","Switzerland"],a:0},
+ {q:"What's the most important thing I look for in a best friend?",opts:["Loyalty","Humour","Honesty","Other / something else"],a:3},
+ {q:"What's my biggest dream in life?",opts:["Become famous","Become successful and rich","Live a luxury lifestyle","Other / something else"],a:3},
+ {q:"What's my biggest strength?",opts:["Confidence","Never give up","Think differently","Other / something else"],a:3},
+ {q:"What makes me feel truly happy?",opts:["Money and luxury","Love and romance","Being with my best friends","Peace and being alone"],a:2}
+];
+let index=0,answers=[],friendName="";
+const $=id=>document.getElementById(id);
+function show(id){["intro","quiz","results"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
+$("startBtn").addEventListener("click",()=>{friendName=$("friendName").value.trim();index=0;answers=[];show("quiz");renderQuestion()});
+function renderQuestion(){
+ const item=questions[index];$("qCount").textContent=`QUESTION ${index+1} OF ${questions.length}`;$("scoreNow").textContent=`${answers.filter((v,i)=>v===questions[i].a).length} correct`;$("progress").style.width=`${index/questions.length*100}%`;$("questionText").textContent=item.q;$("options").innerHTML="";$("nextBtn").disabled=true;
+ item.opts.forEach((label,i)=>{const b=document.createElement("button");b.className="option";b.innerHTML=`<span class="letter">${String.fromCharCode(65+i)}</span><span>${label}</span>`;b.addEventListener("click",()=>{answers[index]=i;[...$("options").children].forEach(el=>el.classList.remove("selected"));b.classList.add("selected");$("nextBtn").disabled=false});$("options").appendChild(b)});
+ $("nextBtn").textContent=index===questions.length-1?"See my score 🏆":"Lock answer & continue →";
+}
+$("nextBtn").addEventListener("click",()=>{if(answers[index]===undefined)return;index++;if(index<questions.length)renderQuestion();else finish()});
+function finish(){
+ show("results");const score=answers.reduce((n,a,i)=>n+(a===questions[i].a?1:0),0);const pct=Math.round(score/questions.length*100);$("finalScore").textContent=score;$("percent").textContent=`${pct}% correct${friendName?" · Played by "+friendName:""}`;
+ let title,msg;if(score===15){title="BESTIE LEGEND 👑";msg="WHAT?! You know me inside out. Certified best friend energy!";}else if(score>=12){title="Real one alert 🔥";msg="You know me really well. That's top-tier friendship."; }else if(score>=8){title="Pretty close 😎";msg="You know quite a bit—but there are still secrets to discover."; }else if(score>=4){title="We need to hang out more 😂";msg="Some answers surprised you. Time for more bestie moments!";}else{title="Who are you? 😭";msg="Bruhhh, run it back after getting to know me better!";}
+ $("resultTitle").textContent=title;$("resultMessage").textContent=msg;$("progress").style.width="100%";$("review").classList.add("hidden");$("reviewList").innerHTML="";
+ questions.forEach((q,i)=>{const d=document.createElement("div");d.className="result-item";const chosen=answers[i]===undefined?"No answer":q.opts[answers[i]];const correct=q.opts[q.a];d.innerHTML=`<strong>${i+1}. ${q.q}</strong><span class="${answers[i]===q.a?"good":"bad"}">${answers[i]===q.a?"✓":"✗"} Your answer: ${chosen}</span><div class="small">My answer: ${correct}</div>`;$("reviewList").appendChild(d)});
+}
+$("reviewBtn").addEventListener("click",()=>{$("review").classList.toggle("hidden");if(!$("review").classList.contains("hidden"))$("review").scrollIntoView({behavior:"smooth",block:"start"})});
+$("retryBtn").addEventListener("click",()=>{index=0;answers=[];show("intro")});
+$("shareBtn").addEventListener("click",async()=>{const score=$("finalScore").textContent;const text=`I scored ${score}/15 on the “How well do you know me?” quiz! Can you beat my score?`;try{if(navigator.share)await navigator.share({title:"My quiz result",text,url:location.href});else if(navigator.clipboard){await navigator.clipboard.writeText(text+" "+location.href);alert("Result text and website link copied! Send it to your friends.");}else{prompt("Copy your result and website link:",text+" "+location.href)}}catch(e){/* user cancelled share */}});
+</script>
+</body>
+</html>
